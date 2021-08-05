@@ -9,5 +9,5 @@ app.use("/userApi", user);
 app.use("/**", notFound);
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("app is up");
+  console.log("app is Up");
 });

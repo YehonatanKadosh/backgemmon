@@ -12,6 +12,7 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "express": "~4.16.1",
-    "mongoose": "^5.13.5"
+    "mongoose": "^5.13.5",
+    "config": "^3.3.6"
   }
 }

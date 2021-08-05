@@ -1,5 +1,5 @@
-var express = require("express");
-const { saveNewUser, usernameExists, logIn } = require("../mongoDB/mongo");
+const express = require("express");
+const { saveNewUser, usernameExists, logIn } = require("../mongoDB/userDB");
 const router = express.Router();
 
 router.post("/new-user", async (req, res) => {

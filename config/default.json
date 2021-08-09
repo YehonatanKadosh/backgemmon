@@ -1,3 +1,4 @@
 {
-  "MongoKEY": "mongodb+srv://jacojacoj3:tuhp8112@backgammondb.rks65.mongodb.net/backgammonUsers?retryWrites=true&w=majority"
+  "MongoKEY": "mongodb+srv://jacojacoj3:tuhp8112@backgammondb.rks65.mongodb.net/backgammonUsers?retryWrites=true&w=majority",
+  "JSONWEBTOKENS": "abcdefghijklmnopqrstuvwxyz"
 }

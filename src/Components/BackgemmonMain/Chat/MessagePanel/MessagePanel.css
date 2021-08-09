@@ -1,0 +1,13 @@
+.sendBtn {
+  align-self: center;
+  display: flex;
+  justify-content: center;
+}
+
+.row {
+  align-items: center;
+}
+
+.messagesPanel {
+  flex-direction: column;
+}

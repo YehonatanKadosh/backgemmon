@@ -1,0 +1,6 @@
+.channels_container {
+  max-width: 25%;
+  width: fit-content;
+  position: relative;
+  transition: 0.5s;
+}

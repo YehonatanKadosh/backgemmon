@@ -1,0 +1,65 @@
+import "./App.css";
+import React, { useEffect, useState } from "react";
+import SignIn from "../signIn/signIn";
+import { Redirect, Route, Switch } from "react-router";
+import SignUp from "../signUp/signUp";
+import BackgemmonBoard from "../BackgemmonMain/backgemmonBoard";
+import ConnectedElseware from "../connectedElseware/connectedElseware";
+
+const App = () => {
+  const [isAuthenticated, userHasAuthenticated] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    return () => sessionStorage.removeItem("token");
+  }, []);
+
+  return !isAuthenticated ? (
+    <Switch>
+      <Route
+        path="/"
+        exact
+        render={(props) => (
+          <SignIn
+            {...props}
+            isAuthenticated={isAuthenticated}
+            setUser={setUser}
+            userHasAuthenticated={userHasAuthenticated}
+          />
+        )}
+      />
+      <Route
+        path="/sign-up"
+        render={(props) => (
+          <SignUp
+            {...props}
+            isAuthenticated={isAuthenticated}
+            setUser={setUser}
+            userHasAuthenticated={userHasAuthenticated}
+          />
+        )}
+      />
+      <Redirect to="/" />
+    </Switch>
+  ) : (
+    <Switch>
+      <Route
+        path="/Backgemmon"
+        render={(props) => (
+          <BackgemmonBoard
+            {...props}
+            user={user}
+            userHasAuthenticated={userHasAuthenticated}
+          />
+        )}
+      />
+
+      <Route
+        path="/ConnectedElseware"
+        render={(props) => <ConnectedElseware {...props} />}
+      />
+    </Switch>
+  );
+};
+
+export default App;

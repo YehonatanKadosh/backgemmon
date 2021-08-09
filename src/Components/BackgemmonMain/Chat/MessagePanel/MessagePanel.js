@@ -6,7 +6,9 @@ import EventEmitter from "reactjs-eventemitter";
 const MessagesPanel = (props) => {
   const [input_value, setInputValue] = useState("");
   let list = props.channel.messages ? (
-    props.channel.messages.map((message) => <div>{message.text}</div>)
+    props.channel.messages.map((message) => (
+      <div key={message._id}>{message.text}</div>
+    ))
   ) : (
     <div className="no-content-mesage">There is no messages to show</div>
   );

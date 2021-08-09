@@ -8,9 +8,9 @@ import {
   AccordionSummary,
   Typography,
   AccordionDetails,
+  Drawer,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ChatToggler from "./ChatToggler/ChatToggler";
 import Face from "@material-ui/icons/Face";
 import EventEmitter from "reactjs-eventemitter";
 
@@ -18,7 +18,6 @@ export class ChatComponent extends React.Component {
   state = {
     channels: [],
     chosenChannel: undefined,
-    chatVisable: true,
   };
 
   sortChannels = (channels) => {
@@ -127,10 +126,6 @@ export class ChatComponent extends React.Component {
   componentDidMount() {
     this.configureSocket();
     this.loadChannels();
-
-    EventEmitter.subscribe("chat_toggle", () =>
-      this.setState({ chatVisable: !this.state.chatVisable })
-    );
   }
 
   componentWillUnmount() {
@@ -139,50 +134,57 @@ export class ChatComponent extends React.Component {
 
   render() {
     return (
-      <div className="channels_container">
-        {this.state.chatVisable &&
-          this.state.channels.map((channel) => {
-            return (
-              <Accordion
-                expanded={
-                  this.state.chosenChannel &&
-                  this.state.chosenChannel.userId === channel.userId &&
-                  channel.userId !== this.props.user._id
-                    ? true
-                    : false
-                }
-                onClick={() => this.handleChannelSelect(channel.userId)}
-                key={channel.userId}
-                disabled={channel.userId === this.props.user._id}
-              >
-                <AccordionSummary
-                  expandIcon={
-                    channel.userId !== this.props.user._id ? (
-                      <ExpandMoreIcon />
-                    ) : (
-                      <Face />
-                    )
+      <>
+        <Drawer
+          className={this.props.classes.drawer}
+          classes={this.props.classes.drawerPaper}
+          anchor={"left"}
+          open={this.props.chatVisable}
+          variant="persistent"
+        >
+          {this.props.chatVisable &&
+            this.state.channels.map((channel) => {
+              return (
+                <Accordion
+                  expanded={
+                    this.state.chosenChannel &&
+                    this.state.chosenChannel.userId === channel.userId &&
+                    channel.userId !== this.props.user._id
+                      ? true
+                      : false
                   }
-                  aria-controls="panel2a-content"
-                  id="panel2a-header"
+                  key={channel.userId}
+                  disabled={channel.userId === this.props.user._id}
                 >
-                  <Typography>
-                    {channel.name}{" "}
-                    {channel.newMessages ? `(${channel.newMessages})` : ""}
-                  </Typography>
-                </AccordionSummary>
-                {channel.userId !== this.props.user._id &&
-                  this.state.chosenChannel &&
-                  this.state.chosenChannel.userId === channel.userId && (
-                    <AccordionDetails className="messagesPanel">
-                      <MessagesPanel channel={this.state.chosenChannel} />
-                    </AccordionDetails>
-                  )}
-              </Accordion>
-            );
-          })}
-        <ChatToggler chatVisable={this.state.chatVisable} />
-      </div>
+                  <AccordionSummary
+                    onClick={() => this.handleChannelSelect(channel.userId)}
+                    expandIcon={
+                      channel.userId !== this.props.user._id ? (
+                        <ExpandMoreIcon />
+                      ) : (
+                        <Face />
+                      )
+                    }
+                    aria-controls="panel2a-content"
+                    id="panel2a-header"
+                  >
+                    <Typography>
+                      {channel.name}{" "}
+                      {channel.newMessages ? `(${channel.newMessages})` : ""}
+                    </Typography>
+                  </AccordionSummary>
+                  {channel.userId !== this.props.user._id &&
+                    this.state.chosenChannel &&
+                    this.state.chosenChannel.userId === channel.userId && (
+                      <AccordionDetails className="messagesPanel">
+                        <MessagesPanel channel={this.state.chosenChannel} />
+                      </AccordionDetails>
+                    )}
+                </Accordion>
+              );
+            })}
+        </Drawer>
+      </>
     );
   }
 }

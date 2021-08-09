@@ -1,18 +1,18 @@
 :root {
-  --chat-toggler-transition: 0.5s;
+  --chat-toggler-transition: 225ms;
 }
 
 .chat_toggler {
   position: absolute;
-  top: calc(50vh - 18px);
-  left: 0vw;
-  width: max-content;
+  left: 0%;
+  width: 100%;
+  height: 100%;
   transition: var(--chat-toggler-transition);
 }
 
 .chat_toggler_opened {
-  top: calc(50% - 18px);
-  left: 100%;
+  left: 25%;
+  width: 75%;
   transition: var(--chat-toggler-transition);
 }
 .chat_icon {

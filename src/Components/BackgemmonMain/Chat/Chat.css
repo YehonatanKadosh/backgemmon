@@ -3,4 +3,10 @@
   width: fit-content;
   position: relative;
   transition: 0.5s;
+  width: auto;
+}
+
+.MuiPaper-root {
+  width: inherit;
+  overflow: hidden;
 }

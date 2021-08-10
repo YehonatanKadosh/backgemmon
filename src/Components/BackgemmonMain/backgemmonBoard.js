@@ -1,6 +1,5 @@
-import { AppBar, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { useState } from "react";
-import clsx from "clsx";
 import { ChatComponent } from "./Chat/Chat";
 import ChatToggler from "./ChatToggler/ChatToggler";
 

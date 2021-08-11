@@ -1,0 +1,46 @@
+.participants_container {
+  max-width: 25%;
+  position: relative;
+  transition: var(--chat-toggler-transition);
+  height: 100%;
+  width: 25%;
+  left: -25%;
+  overflow: auto;
+
+  .MuiPaper-root {
+    width: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .card {
+    border: 0px;
+    background-color: inherit !important;
+    border-radius: inherit !important;
+  }
+
+  :first-child {
+    .MuiPaper-root {
+      border-radius: 0.25rem 0.25rem 0rem 0rem !important;
+    }
+  }
+  :last-child {
+    .MuiPaper-root {
+      border-radius: 0rem 0rem 0.25rem 0.25rem !important;
+    }
+  }
+}
+
+.chat_open {
+  left: 0%;
+}
+
+.MuiAccordionSummary-root {
+  width: 100% !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.MuiAccordionDetails-root {
+  padding: 0px !important;
+  flex-direction: column;
+}

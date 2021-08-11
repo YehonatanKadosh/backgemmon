@@ -1,0 +1,77 @@
+.sendBtn {
+  align-self: center;
+  display: flex;
+  justify-content: center;
+}
+
+.row {
+  align-items: center;
+}
+
+.messagesPanel {
+  flex-direction: column;
+}
+
+.user_info {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 15px;
+}
+.msg_card_body {
+  overflow-y: auto;
+  max-height: 50vh;
+
+  .MuiOutlinedInput-multiline {
+    padding: 0px 5px !important;
+    background-color: rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+.MuiInputBase-multiline {
+  padding: 0px;
+}
+
+.MuiAccordionDetails-root .MuiFormControl-root {
+  padding: 1px 5px !important;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  padding: 0% 2% !important;
+  display: flex;
+  flex-direction: column;
+}
+.msg_time {
+  position: absolute;
+  bottom: -15px;
+  font-size: 10px;
+}
+.msg_time_sent {
+  right: 0%;
+}
+.msg_time_recieved {
+  left: 0%;
+}
+
+.msg_cotainer {
+  margin-top: auto;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+
+  .sent {
+    background-color: #78e08f;
+    float: right;
+  }
+  .recieved {
+    background-color: #82ccdd;
+    float: left;
+  }
+  .text_container {
+    padding: 3px 10px;
+    border-radius: 25px;
+    width: fit-content;
+    max-width: 100%;
+  }
+}

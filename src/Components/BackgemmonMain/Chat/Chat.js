@@ -1,189 +1,226 @@
 import React from "react";
 import MessagesPanel from "./MessagePanel/MessagePanel";
-import socketIOClient from "socket.io-client";
-import "./Chat.css";
+import "./Chat.scss";
 import axios from "axios";
 import {
   Accordion,
   AccordionSummary,
   Typography,
   AccordionDetails,
-  Drawer,
+  TextField,
+  IconButton,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Face from "@material-ui/icons/Face";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import EventEmitter from "reactjs-eventemitter";
-
 export class ChatComponent extends React.Component {
   state = {
-    channels: [],
-    chosenChannel: undefined,
+    sockets: [],
+    chosenSocket: undefined,
+    expanded: "",
+    searchWord: undefined,
   };
 
-  sortChannels = (channels) => {
-    channels.sort((c1, c2) =>
-      c1.userId === this.props.user._id
-        ? -1
-        : c2.userId === this.props.user._id
-        ? 1
-        : 0
-    );
+  sortSockets = () => {
+    let sockets = this.state.sockets;
+    let SearchResults = 0;
+    for (let i = 0; i < sockets.length; i++) {
+      if (this.state.sockets[i].userId === this.props.user._id) {
+        [sockets[0], sockets[i]] = [sockets[i], sockets[0]];
+      } else if (
+        this.state.sockets[i].userId === this.state.chosenSocket?.userId
+      )
+        [sockets[i], sockets[1]] = [sockets[1], sockets[i]];
+      else if (
+        this.state.searchWord !== "" &&
+        this.state.sockets[i].name
+          .toLowerCase()
+          .includes(this.state.searchWord?.toLowerCase())
+      ) {
+        [sockets[i], sockets[SearchResults + 1]] = [
+          sockets[SearchResults + 1],
+          sockets[i],
+        ];
+        SearchResults++;
+      }
+    }
+    this.setState({ sockets });
   };
 
-  configureSocket = () => {
-    const socket = socketIOClient(process.env.REACT_APP_SERVER_URL, {
-      query: `name=${this.props.user.name}&userId=${this.props.user._id}`,
-    });
-
-    socket.on("connected-on-another-device", () => {
-      socket.disconnect();
-      this.props.history.push("/ConnectedElseware");
-    });
-
-    socket.on("new-connection", (newChannel) => {
-      let channels = this.state.channels;
-      if (channels) channels.push(newChannel);
-      else channels = [newChannel];
-      this.sortChannels(channels);
-      this.setState({ channels });
-    });
-
-    socket.on("user-disconnected", (removedChannelId) => {
-      let channels = this.state.channels;
-      let indexOfChannel = channels.indexOf(
-        channels.find((c) => c.id === removedChannelId)
-      );
-      channels.splice(indexOfChannel, 1);
-      this.setState({ channels });
-    });
-
-    socket.on("message", (message) => {
-      message.isSent = this.props.user._id === message.senderid ? true : false;
-      let channels = this.state.channels;
-
-      channels.forEach((channel) => {
-        if (
-          (channel.userId === message.senderid &&
-            message.destinationUserId === this.props.user._id) ||
-          (channel.userId === message.destinationUserId &&
-            message.senderid === this.props.user._id)
-        ) {
-          !channel.messages
-            ? (channel.messages = [message])
-            : channel.messages.push(message);
-          if (
-            message.destinationUserId === this.props.user._id &&
-            this.state.chosenChannel?.userId !== channel.userId
-          )
-            !channel.newMessages
-              ? (channel.newMessages = 1)
-              : (channel.newMessages += 1);
-        }
-      });
-      this.setState({ channels });
-    });
-
-    EventEmitter.subscribe("send-message", (text) => {
-      socket.emit("send-message", {
-        destinationUserId: this.state.chosenChannel.userId,
-        text,
-        senderid: this.props.user._id,
-      });
-    });
-
-    EventEmitter.subscribe("disconnect", () => socket.disconnect());
-  };
-
-  loadChannels = async () => {
+  loadSockets = async () => {
     let responseData = (
-      await axios.get(process.env.REACT_APP_SERVER_ONLINE_Channels, {
+      await axios.get(process.env.REACT_APP_SERVER_Sockets, {
         headers: { "x-access-token": sessionStorage.getItem("token") },
       })
     ).data;
-
-    let channels = this.state.channels;
-    if (channels) {
-      responseData.channels.forEach((existingChannel) => {
-        channels.push(existingChannel);
+    let sockets = this.state.sockets;
+    if (sockets) {
+      responseData.sockets.forEach((existingSocket) => {
+        existingSocket.messagesSet = false;
+        sockets.push(existingSocket);
       });
-    } else channels = responseData.channels;
-    this.sortChannels(channels);
-    this.setState({ channels });
+    } else {
+      sockets = responseData.sockets.map(
+        (existingSocket) => (existingSocket.messagesSet = false)
+      );
+    }
+    this.setState({ sockets }, this.sortSockets);
   };
 
-  handleChannelSelect = (id) => {
-    if (this.state.chosenChannel?.userId !== id) {
-      const chosenChannel = this.state.channels.find(
-        (channel) => channel.userId === id
+  setSocketConversationId = async (socket) => {
+    let conversation = (
+      await axios.get(process.env.REACT_APP_SERVER_Conversations, {
+        headers: { "x-access-token": sessionStorage.getItem("token") },
+        params: { participants: [this.props.user._id, socket.userId] },
+      })
+    ).data;
+    socket.conversationId = conversation.conversationId;
+    if (conversation.messages) socket.messages = conversation.messages;
+    socket.messagesSet = true;
+  };
+
+  handleSocketSelect = async (socketUserId) => {
+    if (this.state.chosenSocket?.userId !== socketUserId) {
+      const chosenSocket = this.state.sockets.find(
+        (socket) => socket.userId === socketUserId
       );
-      if (chosenChannel.newMessages) chosenChannel.newMessages = undefined;
-      this.setState({ chosenChannel });
+      if (!chosenSocket.messagesSet)
+        await this.setSocketConversationId(chosenSocket);
+      if (chosenSocket.newMessages) chosenSocket.newMessages = undefined;
+      this.setState({ chosenSocket });
     } else {
-      this.setState({ chosenChannel: undefined });
+      this.setState({ chosenSocket: undefined });
     }
+
+    let sockets = this.state.sockets;
+    this.setState({ sockets }, this.sortSockets);
+  };
+
+  subscribeToSocketEvents = () => {
+    this.props.socket.on("new-connection", (newSocket) => {
+      newSocket.messagesSet = false;
+      let sockets = this.state.sockets;
+      if (sockets) sockets.push(newSocket);
+      else sockets = [newSocket];
+      this.setState({ sockets }, this.sortSockets);
+    });
+
+    this.props.socket.on("user-disconnected", (removedSocketId) => {
+      let sockets = this.state.sockets;
+      let indexOfSocket = sockets.indexOf(
+        sockets.find((c) => c.id === removedSocketId)
+      );
+      sockets.splice(indexOfSocket, 1);
+      this.setState({ sockets });
+    });
+
+    this.props.socket.on("message", (message) => {
+      let sockets = this.state.sockets;
+
+      sockets.forEach(async (socket) => {
+        if (
+          (socket.userId === message.receiverId &&
+            message.senderId === this.props.user._id) ||
+          (socket.userId === message.senderId &&
+            message.receiverId === this.props.user._id)
+        ) {
+          if (!socket.messagesSet) await this.setSocketConversationId(socket);
+          else {
+            !socket.messages
+              ? (socket.messages = [message])
+              : socket.messages.push(message);
+          }
+          if (
+            message.receiverId === this.props.user._id &&
+            this.state.chosenSocket?.userId !== socket.userId
+          ) {
+            socket.newMessages === undefined
+              ? (socket.newMessages = 1)
+              : (socket.newMessages += 1);
+          }
+        }
+      });
+      this.setState({ sockets });
+    });
   };
 
   componentDidMount() {
-    this.configureSocket();
-    this.loadChannels();
-  }
-
-  componentWillUnmount() {
-    EventEmitter.dispatch("disconnect");
+    this.loadSockets();
+    this.subscribeToSocketEvents();
   }
 
   render() {
     return (
       <>
-        <Drawer
-          className={this.props.classes.drawer}
-          classes={this.props.classes.drawerPaper}
-          anchor={"left"}
-          open={this.props.chatVisable}
-          variant="persistent"
+        <div
+          className={
+            (this.props.chatVisable ? "chat_open" : "") +
+            " participants_container"
+          }
         >
-          {this.props.chatVisable &&
-            this.state.channels.map((channel) => {
-              return (
-                <Accordion
-                  expanded={
-                    this.state.chosenChannel &&
-                    this.state.chosenChannel.userId === channel.userId &&
-                    channel.userId !== this.props.user._id
-                      ? true
-                      : false
-                  }
-                  key={channel.userId}
-                  disabled={channel.userId === this.props.user._id}
-                >
+          {this.state.sockets.map((socket) => {
+            return socket.userId !== this.props.user._id ? (
+              <Accordion
+                key={socket._id}
+                expanded={this.state.expanded === socket.userId}
+                onChange={(e, isExpanded) =>
+                  this.setState({
+                    expanded: isExpanded ? socket.userId : false,
+                  })
+                }
+              >
+                <div className="card">
                   <AccordionSummary
-                    onClick={() => this.handleChannelSelect(channel.userId)}
-                    expandIcon={
-                      channel.userId !== this.props.user._id ? (
-                        <ExpandMoreIcon />
-                      ) : (
-                        <Face />
-                      )
-                    }
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
+                    onClick={() => this.handleSocketSelect(socket.userId)}
+                    expandIcon={<ExpandMoreIcon />}
                   >
                     <Typography>
-                      {channel.name}{" "}
-                      {channel.newMessages ? `(${channel.newMessages})` : ""}
+                      {socket.name}
+                      {socket.newMessages ? `(${socket.newMessages})` : ""}
                     </Typography>
                   </AccordionSummary>
-                  {channel.userId !== this.props.user._id &&
-                    this.state.chosenChannel &&
-                    this.state.chosenChannel.userId === channel.userId && (
-                      <AccordionDetails className="messagesPanel">
-                        <MessagesPanel channel={this.state.chosenChannel} />
-                      </AccordionDetails>
-                    )}
-                </Accordion>
-              );
-            })}
-        </Drawer>
+                  {socket.messagesSet && this.state.expanded === socket.userId && (
+                    <AccordionDetails>
+                      <MessagesPanel
+                        me={this.props.user}
+                        socketIO={this.props.socket}
+                        socket={this.state.chosenSocket}
+                      />
+                    </AccordionDetails>
+                  )}
+                </div>
+              </Accordion>
+            ) : (
+              <Accordion key={0} expanded={false}>
+                <AccordionSummary
+                  expandIcon={
+                    <IconButton
+                      color="primary"
+                      children={<ChevronLeftIcon />}
+                      onClick={() => EventEmitter.dispatch("chat_toggle")}
+                    />
+                  }
+                >
+                  <Typography>
+                    <TextField
+                      onChange={(e) =>
+                        this.setState(
+                          {
+                            expanded: undefined,
+                            searchWord: e.target.value,
+                            chosenSocket: undefined,
+                          },
+                          this.sortSockets
+                        )
+                      }
+                      label={"Welcome " + this.props.user.name}
+                    />
+                  </Typography>
+                </AccordionSummary>
+              </Accordion>
+            );
+          })}
+        </div>
       </>
     );
   }

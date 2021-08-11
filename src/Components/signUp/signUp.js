@@ -9,7 +9,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { NavLink } from "react-router-dom";
-import { Copyright, useStyles } from "../copyright/copyright";
+import { Copyright } from "../copyright/copyright";
 import axios from "axios";
 
 export default function SignUp(props) {
@@ -18,14 +18,13 @@ export default function SignUp(props) {
   const [lastName, setFirst] = useState("");
   const [firstName, setLast] = useState("");
   const [error, setError] = useState("");
-  const classes = useStyles();
 
   const submit = () => {
     axios
       .post(process.env.REACT_APP_SERVER_Users + "/add", {
         email,
         password,
-        name: `${firstName} ${lastName}`,
+        name: firstName + lastName ? ` ${lastName}` : "",
       })
       .then((response) => {
         sessionStorage.setItem("token", response.headers["x-access-token"]);
@@ -34,14 +33,14 @@ export default function SignUp(props) {
         props.history.push("/Backgemmon");
       })
       .catch((err) => {
-        setError(err.response.data);
+        setError(err.response?.data || err);
       });
   };
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+      <div>
+        <Avatar>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -110,7 +109,6 @@ export default function SignUp(props) {
           fullWidth
           variant="contained"
           color="primary"
-          className={classes.submit}
         >
           Sign Up
         </Button>

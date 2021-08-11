@@ -1,62 +1,53 @@
-import { makeStyles } from "@material-ui/core";
-import { useState } from "react";
+import React from "react";
 import { ChatComponent } from "./Chat/Chat";
 import ChatToggler from "./ChatToggler/ChatToggler";
+import socketIOClient from "socket.io-client";
+import EventEmitter from "reactjs-eventemitter";
+import "./backgemmonBoard.css";
+export default class BackgemmonBoard extends React.Component {
+  state = {
+    chatVisable: true,
+    socket: socketIOClient(process.env.REACT_APP_SERVER_URL, {
+      query: `name=${this.props.user.name}&userId=${this.props.user._id}`,
+    }),
+  };
 
-const BackgemmonBoard = (props) => {
-  const [chatVisable, setChatVisability] = useState(true);
+  subscribeToSocketEvents = () => {
+    this.state.socket.on("connected-on-another-device", () => {
+      this.componentWillUnmount();
+      this.props.history.push("/ConnectedElseware");
+    });
+  };
 
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      display: "flex",
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-    },
-    hide: {
-      display: "none",
-    },
-    drawer: {
-      width: "25vw",
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: "25vw",
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      marginLeft: -"25vw",
-    },
-    contentShift: {
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    },
-  }));
+  subscribeToEventEmitterEvents = () => {
+    EventEmitter.subscribe("chat_toggle", () =>
+      this.setState({
+        chatVisable: !this.state.chatVisable,
+      })
+    );
+  };
 
-  const classes = useStyles();
+  componentDidMount() {
+    this.subscribeToSocketEvents();
+    this.subscribeToEventEmitterEvents();
+  }
 
-  return (
-    <div className="w-100 h-100">
-      <ChatComponent
-        classes={classes}
-        chatVisable={chatVisable}
-        user={props.user}
-        history={props.history}
-      />
-      <ChatToggler
-        setChatVisability={setChatVisability}
-        chatVisable={chatVisable}
-      />
-    </div>
-  );
-};
+  componentWillUnmount() {
+    this.state.socket.disconnect();
+    sessionStorage.removeItem("token");
+    this.props.userHasAuthenticated(false);
+  }
 
-export default BackgemmonBoard;
+  render() {
+    return (
+      <div className="backgemmon_container">
+        <ChatComponent
+          socket={this.state.socket}
+          chatVisable={this.state.chatVisable}
+          user={this.props.user}
+        />
+        <ChatToggler chatVisable={this.state.chatVisable} />
+      </div>
+    );
+  }
+}

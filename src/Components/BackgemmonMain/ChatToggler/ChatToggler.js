@@ -2,6 +2,7 @@ import React from "react";
 import Chat from "@material-ui/icons/Chat";
 import "./ChatToggler.css";
 import { Button } from "@material-ui/core";
+import EventEmitter from "reactjs-eventemitter";
 
 const ChatToggler = (props) => {
   return (
@@ -12,7 +13,7 @@ const ChatToggler = (props) => {
     >
       <Button
         variant="contained"
-        onClick={() => props.setChatVisability(!props.chatVisable)}
+        onClick={() => EventEmitter.dispatch("chat_toggle")}
       >
         <Chat className="chat_icon" />
         {props.chatVisable ? "close chat" : "open chat"}

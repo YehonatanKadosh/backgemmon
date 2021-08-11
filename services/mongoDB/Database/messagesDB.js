@@ -1,18 +1,24 @@
 const { messageSchema } = require("../models/messageSchema");
 const mongo = require("mongoose");
 const Message = mongo.model("Message", messageSchema);
-const config = require("config");
 
-const newMessage = async (sender, message, dest) => {
-  return new Promise((res, rej) => {
-    let newMessage = new Message({
-      sender: sender,
-      message: message,
-      destinationUser: dest,
+const newMessage = async (senderId, message, conversationId, time) => {
+  return new Promise(async (res) => {
+    let addedmessage = new Message({
+      senderId,
+      message,
+      conversationId,
+      time,
     });
-    WriteResult = newMessage.save();
-    WriteResult.nInserted > 0 ? res(newChannel) : rej(WriteResult.writeError);
+    await addedmessage.save();
+    res(addedmessage);
   });
 };
 
-module.exports = { newMessage: newMessage };
+const getMessages = async (conversationId) => {
+  return new Promise(async (res) => {
+    res(await Message.find({ conversationId }));
+  });
+};
+
+module.exports = { newMessage, getMessages };

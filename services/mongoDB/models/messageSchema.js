@@ -1,7 +1,10 @@
 const mongo = require("mongoose");
 
-module.exports.messageSchema = new mongo.Schema({
-  sender: Number,
+const messageSchema = new mongo.Schema({
+  senderId: String,
   message: String,
-  destinationUser: Number,
+  conversationId: String,
+  time: Date,
 });
+
+module.exports = { messageSchema };

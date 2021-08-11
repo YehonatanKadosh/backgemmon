@@ -1,7 +1,7 @@
 const mongo = require("mongoose");
 
-module.exports.channelSchema = new mongo.Schema({
+module.exports.socketSchema = new mongo.Schema({
   name: String,
   userId: String,
-  channelId: String,
+  socketId: String,
 });

@@ -1,0 +1,33 @@
+.game-piece {
+  border-radius: 50%;
+  text-align: center;
+}
+
+.black {
+  path {
+    color: black;
+  }
+  :first-child {
+    color: black;
+  }
+
+  :hover {
+    :first-child {
+      color: white;
+    }
+  }
+}
+
+.white {
+  path {
+    color: white;
+  }
+  :first-child {
+    color: white;
+  }
+  :hover {
+    :first-child {
+      color: black !important;
+    }
+  }
+}

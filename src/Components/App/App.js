@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.scss";
 import React, { useEffect, useState } from "react";
 import SignIn from "../signIn/signIn";
 import { Redirect, Route, Switch } from "react-router";
@@ -39,6 +39,10 @@ const App = () => {
           />
         )}
       />
+      <Route
+        path="/ConnectedElseware"
+        render={(props) => <ConnectedElseware {...props} />}
+      />
       <Redirect to="/" />
     </Switch>
   ) : (
@@ -53,11 +57,7 @@ const App = () => {
           />
         )}
       />
-
-      <Route
-        path="/ConnectedElseware"
-        render={(props) => <ConnectedElseware {...props} />}
-      />
+      <Redirect to="/Backgemmon" />
     </Switch>
   );
 };

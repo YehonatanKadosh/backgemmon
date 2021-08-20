@@ -1,0 +1,33 @@
+:root {
+  --chat-toggler-transition: 225ms;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  background: #9e6b33;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.MuiFormControl-root {
+  .MuiOutlinedInput-notchedOutline {
+    top: 0 !important;
+  }
+  .MuiOutlinedInput-root.Mui-error {
+    .MuiOutlinedInput-notchedOutline {
+      border-color: brown !important;
+    }
+  }
+  .MuiFormLabel-root.Mui-error {
+    color: brown;
+    span {
+      color: brown;
+    }
+  }
+  .MuiFormHelperText-root.Mui-error {
+    color: brown;
+  }
+}

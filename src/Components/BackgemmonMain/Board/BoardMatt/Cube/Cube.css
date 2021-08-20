@@ -1,0 +1,36 @@
+.cube {
+  width: 5%;
+  height: 5%;
+  position: absolute;
+  background-color: whitesmoke;
+  border: 1px black;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  left: 47.5%;
+}
+
+.first {
+  bottom: 55%;
+}
+.second {
+  top: 55%;
+}
+
+.indicators-row {
+  display: flex;
+  font-weight: 900;
+  justify-content: space-around;
+  align-items: center;
+  overflow: hidden;
+  margin: 1px;
+}
+
+.number-indicator {
+  background-color: black;
+  border-radius: 50%;
+  width: 30%;
+  height: 100%;
+  overflow: hidden;
+}

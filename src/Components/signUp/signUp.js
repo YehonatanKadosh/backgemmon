@@ -9,7 +9,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { NavLink } from "react-router-dom";
-import { Copyright } from "../copyright/copyright";
+import { Copyright, useStyles } from "../copyright/copyright";
 import axios from "axios";
 
 export default function SignUp(props) {
@@ -17,7 +17,8 @@ export default function SignUp(props) {
   const [password, setPassword] = useState("");
   const [lastName, setFirst] = useState("");
   const [firstName, setLast] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState({});
+  const classes = useStyles();
 
   const submit = () => {
     axios
@@ -33,14 +34,18 @@ export default function SignUp(props) {
         props.history.push("/Backgemmon");
       })
       .catch((err) => {
-        setError(err.response?.data || err);
+        setError(
+          err.response?.data.details
+            ? err.response?.data.details[0]
+            : err.response?.data.toString()
+        );
       });
   };
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div>
-        <Avatar>
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -58,8 +63,12 @@ export default function SignUp(props) {
               id="firstName"
               label="First Name"
               autoFocus
-              error={error.toLowerCase().includes("name")}
-              helperText={error.toLowerCase().includes("name") ? error : ""}
+              error={error?.path && error.path && error.path[0] === "name"}
+              helperText={
+                error?.message && error.path && error.path[0] === "name"
+                  ? error?.message
+                  : ""
+              }
               onChange={(e) => setFirst(e.target.value)}
             />
           </Grid>
@@ -83,8 +92,16 @@ export default function SignUp(props) {
               label="Email Address"
               name="email"
               autoComplete="email"
-              error={error.toLowerCase().includes("email")}
-              helperText={error.toLowerCase().includes("email") ? error : ""}
+              error={
+                (error?.path && error.path && error.path[0] === "email") ||
+                error.toString().includes("user")
+              }
+              helperText={
+                (error?.message && error.path && error.path[0] === "email") ||
+                error.toString().includes("user")
+                  ? error?.message || error
+                  : ""
+              }
               onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
@@ -99,8 +116,12 @@ export default function SignUp(props) {
               id="password"
               autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
-              error={error.toLowerCase().includes("password")}
-              helperText={error.toLowerCase().includes("password") ? error : ""}
+              error={error?.path && error.path && error.path[0] === "password"}
+              helperText={
+                error?.message && error.path && error.path[0] === "password"
+                  ? error?.message
+                  : ""
+              }
             />
           </Grid>
         </Grid>
@@ -109,6 +130,7 @@ export default function SignUp(props) {
           fullWidth
           variant="contained"
           color="primary"
+          className={classes.submit}
         >
           Sign Up
         </Button>

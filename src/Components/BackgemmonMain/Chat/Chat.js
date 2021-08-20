@@ -1,73 +1,21 @@
 import React from "react";
-import MessagesPanel from "./MessagePanel/MessagePanel";
 import "./Chat.scss";
 import axios from "axios";
-import {
-  Accordion,
-  AccordionSummary,
-  Typography,
-  AccordionDetails,
-  TextField,
-  IconButton,
-} from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import { Accordion, CircularProgress } from "@material-ui/core";
 import EventEmitter from "reactjs-eventemitter";
+import ChatHead from "./ChatComponents/ChatHead/ChatHead";
+import ChatBody from "./ChatComponents/ChatBody/ChatBody";
+import ChatUserHeader from "./ChatComponents/ChatUserHeader/ChatUserHeader";
+
 export class ChatComponent extends React.Component {
   state = {
-    sockets: [],
     chosenSocket: undefined,
-    expanded: "",
     searchWord: undefined,
-  };
-
-  sortSockets = () => {
-    let sockets = this.state.sockets;
-    let SearchResults = 0;
-    for (let i = 0; i < sockets.length; i++) {
-      if (this.state.sockets[i].userId === this.props.user._id) {
-        [sockets[0], sockets[i]] = [sockets[i], sockets[0]];
-      } else if (
-        this.state.sockets[i].userId === this.state.chosenSocket?.userId
-      )
-        [sockets[i], sockets[1]] = [sockets[1], sockets[i]];
-      else if (
-        this.state.searchWord !== "" &&
-        this.state.sockets[i].name
-          .toLowerCase()
-          .includes(this.state.searchWord?.toLowerCase())
-      ) {
-        [sockets[i], sockets[SearchResults + 1]] = [
-          sockets[SearchResults + 1],
-          sockets[i],
-        ];
-        SearchResults++;
-      }
-    }
-    this.setState({ sockets });
-  };
-
-  loadSockets = async () => {
-    let responseData = (
-      await axios.get(process.env.REACT_APP_SERVER_Sockets, {
-        headers: { "x-access-token": sessionStorage.getItem("token") },
-      })
-    ).data;
-    let sockets = this.state.sockets;
-    if (sockets) {
-      responseData.sockets.forEach((existingSocket) => {
-        existingSocket.messagesSet = false;
-        sockets.push(existingSocket);
-      });
-    } else {
-      sockets = responseData.sockets.map(
-        (existingSocket) => (existingSocket.messagesSet = false)
-      );
-    }
-    this.setState({ sockets }, this.sortSockets);
+    loading: false,
   };
 
   setSocketConversationId = async (socket) => {
+    this.setState({ loading: true });
     let conversation = (
       await axios.get(process.env.REACT_APP_SERVER_Conversations, {
         headers: { "x-access-token": sessionStorage.getItem("token") },
@@ -77,46 +25,13 @@ export class ChatComponent extends React.Component {
     socket.conversationId = conversation.conversationId;
     if (conversation.messages) socket.messages = conversation.messages;
     socket.messagesSet = true;
-  };
-
-  handleSocketSelect = async (socketUserId) => {
-    if (this.state.chosenSocket?.userId !== socketUserId) {
-      const chosenSocket = this.state.sockets.find(
-        (socket) => socket.userId === socketUserId
-      );
-      if (!chosenSocket.messagesSet)
-        await this.setSocketConversationId(chosenSocket);
-      if (chosenSocket.newMessages) chosenSocket.newMessages = undefined;
-      this.setState({ chosenSocket });
-    } else {
-      this.setState({ chosenSocket: undefined });
-    }
-
-    let sockets = this.state.sockets;
-    this.setState({ sockets }, this.sortSockets);
+    this.setState({ loading: false });
   };
 
   subscribeToSocketEvents = () => {
-    this.props.socket.on("new-connection", (newSocket) => {
-      newSocket.messagesSet = false;
-      let sockets = this.state.sockets;
-      if (sockets) sockets.push(newSocket);
-      else sockets = [newSocket];
-      this.setState({ sockets }, this.sortSockets);
-    });
-
-    this.props.socket.on("user-disconnected", (removedSocketId) => {
-      let sockets = this.state.sockets;
-      let indexOfSocket = sockets.indexOf(
-        sockets.find((c) => c.id === removedSocketId)
-      );
-      sockets.splice(indexOfSocket, 1);
-      this.setState({ sockets });
-    });
-
-    this.props.socket.on("message", (message) => {
-      let sockets = this.state.sockets;
-
+    this.props.socketIO.on("message", (message) => {
+      let sockets = this.props.sockets;
+      let index = 0;
       sockets.forEach(async (socket) => {
         if (
           (socket.userId === message.receiverId &&
@@ -134,92 +49,85 @@ export class ChatComponent extends React.Component {
             message.receiverId === this.props.user._id &&
             this.state.chosenSocket?.userId !== socket.userId
           ) {
-            socket.newMessages === undefined
+            !socket.newMessages
               ? (socket.newMessages = 1)
               : (socket.newMessages += 1);
           }
         }
+        index += 1;
+        if (index === this.props.sockets.length) {
+          this.setState({ sockets });
+        }
       });
-      this.setState({ sockets });
     });
   };
 
+  subscribeToEventEmmiterEvents = () => {
+    EventEmitter.subscribe("socket_selected", async (socketUserId) => {
+      if (
+        !this.state.chosenSocket ||
+        this.state.chosenSocket?.userId !== socketUserId
+      ) {
+        const chosenSocket = this.props.sockets.find(
+          (socket) => socket.userId === socketUserId
+        );
+        if (!chosenSocket?.messagesSet)
+          await this.setSocketConversationId(chosenSocket);
+        if (chosenSocket.newMessages) chosenSocket.newMessages = undefined;
+        this.setState({ chosenSocket });
+      } else {
+        this.setState({ chosenSocket: undefined });
+      }
+
+      let sockets = this.props.sockets;
+      this.setState({ sockets }, this.props.sortSockets);
+    });
+
+    EventEmitter.subscribe("search_changed", (newSearchWord) =>
+      this.setState(
+        {
+          searchWord: newSearchWord,
+          chosenSocket: undefined,
+        },
+        this.sortSockets
+      )
+    );
+  };
+
   componentDidMount() {
-    this.loadSockets();
     this.subscribeToSocketEvents();
+    this.subscribeToEventEmmiterEvents();
   }
 
   render() {
     return (
       <>
-        <div
-          className={
-            (this.props.chatVisable ? "chat_open" : "") +
-            " participants_container"
-          }
-        >
-          {this.state.sockets.map((socket) => {
-            return socket.userId !== this.props.user._id ? (
+        <div className="participants_container">
+          {this.props.sockets.map((socket) =>
+            socket.userId !== this.props.user._id ? (
               <Accordion
                 key={socket._id}
-                expanded={this.state.expanded === socket.userId}
-                onChange={(e, isExpanded) =>
-                  this.setState({
-                    expanded: isExpanded ? socket.userId : false,
-                  })
+                expanded={this.state.chosenSocket?.userId === socket.userId}
+                onChange={() =>
+                  EventEmitter.dispatch("socket_selected", socket.userId)
                 }
               >
-                <div className="card">
-                  <AccordionSummary
-                    onClick={() => this.handleSocketSelect(socket.userId)}
-                    expandIcon={<ExpandMoreIcon />}
-                  >
-                    <Typography>
-                      {socket.name}
-                      {socket.newMessages ? `(${socket.newMessages})` : ""}
-                    </Typography>
-                  </AccordionSummary>
-                  {socket.messagesSet && this.state.expanded === socket.userId && (
-                    <AccordionDetails>
-                      <MessagesPanel
-                        me={this.props.user}
-                        socketIO={this.props.socket}
-                        socket={this.state.chosenSocket}
-                      />
-                    </AccordionDetails>
-                  )}
-                </div>
+                <ChatHead socket={socket} />
+                <ChatBody
+                  socket={socket}
+                  user={this.props.user}
+                  socketIO={this.props.socketIO}
+                />
               </Accordion>
             ) : (
-              <Accordion key={0} expanded={false}>
-                <AccordionSummary
-                  expandIcon={
-                    <IconButton
-                      color="primary"
-                      children={<ChevronLeftIcon />}
-                      onClick={() => EventEmitter.dispatch("chat_toggle")}
-                    />
-                  }
-                >
-                  <Typography>
-                    <TextField
-                      onChange={(e) =>
-                        this.setState(
-                          {
-                            expanded: undefined,
-                            searchWord: e.target.value,
-                            chosenSocket: undefined,
-                          },
-                          this.sortSockets
-                        )
-                      }
-                      label={"Welcome " + this.props.user.name}
-                    />
-                  </Typography>
-                </AccordionSummary>
-              </Accordion>
-            );
-          })}
+              <React.Fragment key={"0"}>
+                <Accordion expanded={false} color="primary">
+                  <ChatUserHeader name={this.props.user.name} />
+                </Accordion>
+                {this.state.loading && <CircularProgress />}
+              </React.Fragment>
+            )
+          )}
         </div>
       </>
     );

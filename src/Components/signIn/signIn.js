@@ -31,7 +31,7 @@ export default function SignIn(props) {
         props.history.push("/Backgemmon");
       })
       .catch((err) => {
-        setError(err.response.data);
+        setError(err.response?.data.toString());
       });
   };
 
@@ -61,6 +61,7 @@ export default function SignIn(props) {
           autoFocus
         />
         <TextField
+          color="primary"
           variant="outlined"
           margin="normal"
           required

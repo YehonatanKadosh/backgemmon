@@ -1,0 +1,10 @@
+.MuiListItem-button {
+  justify-content: center;
+}
+.MuiDialog-paper {
+  align-items: center;
+}
+.game-denied {
+  color: red;
+  font-size: small;
+}

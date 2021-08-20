@@ -1,0 +1,21 @@
+.Column {
+  height: 40%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: calc(37.5% / 6);
+  overflow: hidden;
+  flex-direction: column;
+
+  svg {
+    margin: -6% 0%;
+  }
+}
+
+.top {
+  top: 6.667%;
+}
+
+.bottom {
+  bottom: 7.5%;
+}

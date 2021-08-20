@@ -1,10 +1,30 @@
+const Joi = require("joi");
 const mongo = require("mongoose");
 
 const messageSchema = new mongo.Schema({
-  senderId: String,
-  message: String,
-  conversationId: String,
-  time: Date,
+  senderId: {
+    type: String,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  conversationId: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: Date,
+    required: true,
+  },
 });
 
-module.exports = { messageSchema };
+const messageJoiScema = Joi.object({
+  senderId: Joi.string().required(),
+  conversationId: Joi.string().required(),
+  message: Joi.string().required(),
+  time: Joi.date().required(),
+});
+
+module.exports = { messageSchema, messageJoiScema };

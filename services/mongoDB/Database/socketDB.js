@@ -4,25 +4,29 @@ const Socket = mongo.model("Socket", socketSchema);
 const _ = require("lodash");
 
 const newSocket = async (name, userId, socketId) => {
-  return new Promise(async (res) => {
-    let newSocket = await new Socket({
-      name,
-      userId,
-      socketId,
-    });
-    newSocket.save();
-    res(newSocket);
+  return new Promise(async (res, rej) => {
+    try {
+      let newSocket = await new Socket({
+        name,
+        userId,
+        socketId,
+      });
+      await newSocket.validate();
+      await newSocket.save();
+      res(newSocket);
+    } catch (err) {
+      rej(err);
+    }
   });
 };
 
 const removeSocket = async (socketId) => {
-  return new Promise(async (res) => {
-    socket = (await Socket.find({ socketId }))[0];
+  return new Promise(async (res, rej) => {
+    let socket = (await Socket.find({ socketId }))[0];
     if (socket) {
-      let userId = socket.userId;
       await Socket.deleteOne({ socketId });
-      res(userId);
-    }
+      res(true);
+    } else rej("socket not found");
   });
 };
 
@@ -37,10 +41,28 @@ const getAllConnectedSockets = async () => {
 };
 
 const getSocketId = async (userId) => {
-  return new Promise(async (res) => {
+  return new Promise(async (res, rej) => {
     let socket = (await Socket.find({ userId }))[0];
     if (socket) res(socket.socketId);
-    res(undefined);
+    else rej("socket not found");
+  });
+};
+
+const updateSocket = async (socketId, newOnGame) => {
+  return new Promise(async (res, rej) => {
+    try {
+      await Socket.updateOne(
+        { socketId: socketId },
+        {
+          $set: {
+            nGame: newOnGame,
+          },
+        }
+      );
+      res(true);
+    } catch (err) {
+      rej(err);
+    }
   });
 };
 
@@ -49,4 +71,5 @@ module.exports = {
   newSocket,
   removeSocket,
   getAllConnectedSockets,
+  updateSocket,
 };

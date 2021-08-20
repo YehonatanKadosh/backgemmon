@@ -6,6 +6,7 @@ const {
   getAllConnectedSockets,
 } = require("../services/mongoDB/Database/socketDB");
 
+// GET /sockets
 router.get("/", auth, (req, res) => {
   getAllConnectedSockets().then((sockets) => {
     res.json({ sockets });

@@ -9,6 +9,9 @@ const app = express();
 app.use(cors({ exposedHeaders: "x-access-token" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.get("/", (req, res, next) => {
+  res.send("server is up");
+});
 app.use("/users", user);
 app.use("/conversations", conversation);
 app.use("/logIn", logIn);

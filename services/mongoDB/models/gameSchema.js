@@ -1,14 +1,43 @@
-const Joi = require("joi");
 const mongo = require("mongoose");
 
-const boardSchema = new mongo.Schema({
+const cellSchema = new mongo.Schema({
   amount: Number,
   isBlack: Boolean,
 });
 
 const cubeSchema = new mongo.Schema({
   value: Number,
-  played: Boolean,
+  isDouble: Boolean,
+  playedOnce: Boolean,
+  playedTwice: Boolean,
+  rolled: Boolean,
+});
+
+const participantSchema = new mongo.Schema({
+  isBlack: Boolean,
+  userId: String,
+  fromLeft: Boolean,
+  myTurn: Boolean,
+  turnEnded: Boolean,
+  jailPopulated: Boolean,
+  allPiecesAtHome: Boolean,
+  piecesInBank: { type: Number, default: 0 },
+  winner: Boolean,
+});
+
+const moveSchema = new mongo.Schema({
+  source: { type: cellSchema },
+  destination: { type: cellSchema },
+  opponentsJail: { type: cellSchema },
+  cube: { type: cubeSchema },
+  participants: [{ type: participantSchema }],
+});
+
+const gameSchema = new mongo.Schema({
+  participants: [{ type: participantSchema }],
+  board: [{ type: cellSchema }],
+  cubes: [{ type: cubeSchema }],
+  lastMoves: [{ type: moveSchema }],
 });
 
 const boardCellsEqual = (firstCell, secondCell) => {
@@ -17,18 +46,4 @@ const boardCellsEqual = (firstCell, secondCell) => {
     firstCell.isBlack === secondCell.isBlack
   );
 };
-
-const participantSchema = new mongo.Schema({
-  isBlack: Boolean,
-  userId: String,
-  fromLeft: Boolean,
-  myTurn: Boolean,
-});
-
-const gameSchema = new mongo.Schema({
-  participants: [{ type: participantSchema }],
-  board: [{ type: boardSchema }],
-  cubes: [{ type: cubeSchema }],
-});
-
 module.exports = { gameSchema, boardCellsEqual };

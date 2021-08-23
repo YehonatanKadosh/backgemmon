@@ -1,5 +1,11 @@
 const _ = require("lodash");
-const { createNewGame, gameMoveValidator } = require("../GameLogic/GameLogic");
+const {
+  createNewGame,
+  gameMoveValidator,
+  getReversedTurn,
+  rollDices,
+  turnEnded,
+} = require("../GameLogic/GameLogic");
 const { getGame } = require("../mongoDB/Database/gameDB");
 const { getSocketId, updateSocket } = require("../mongoDB/Database/socketDB");
 const { updateUser, getUser } = require("../mongoDB/Database/userDB");
@@ -9,13 +15,13 @@ const game_socket_events = async (socket, io) => {
     let opponent1Socket = await getSocketId(game.participants[0].userId);
     let opponent2Socket = await getSocketId(game.participants[1].userId);
     if (game.participants[0].isBlack) {
-      io.to(opponent2Socket).emit("start-new-game", game);
-      game.board = game.board.reverse();
       io.to(opponent1Socket).emit("start-new-game", game);
+      game.board = game.board.reverse();
+      io.to(opponent2Socket).emit("start-new-game", game);
     } else {
-      io.to(opponent1Socket).emit("start-new-game", game);
-      game.board = game.board.reverse();
       io.to(opponent2Socket).emit("start-new-game", game);
+      game.board = game.board.reverse();
+      io.to(opponent1Socket).emit("start-new-game", game);
     }
 
     io.emit("new-game-started", [
@@ -114,6 +120,54 @@ const game_socket_events = async (socket, io) => {
     }
   });
 
+  socket.on("step-back", async (gameId) => {
+    try {
+      reversedTurn = await getReversedTurn(gameId);
+      let opponent = reversedTurn.participants.find(
+        (player) =>
+          player.userId.toString() !== socket.request.user._id.toString()
+      );
+      let opponentSocketId = await getSocketId(opponent.userId.toString());
+
+      io.to(socket.id).emit("new-move", reversedTurn);
+      io.to(opponentSocketId).emit("new-move", reversedTurn);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on("roll-dices", async (gameId) => {
+    try {
+      newDices = await rollDices(gameId);
+      let opponent = newDices.participants.find(
+        (player) =>
+          player.userId.toString() !== socket.request.user._id.toString()
+      );
+      let opponentSocketId = await getSocketId(opponent.userId.toString());
+
+      io.to(socket.id).emit("new-move", newDices);
+      io.to(opponentSocketId).emit("new-move", newDices);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on("end-turn", async (gameId) => {
+    try {
+      switchPlayer = await turnEnded(gameId);
+      let opponent = switchPlayer.participants.find(
+        (player) =>
+          player.userId.toString() !== socket.request.user._id.toString()
+      );
+      let opponentSocketId = await getSocketId(opponent.userId.toString());
+
+      io.to(socket.id).emit("new-move", switchPlayer);
+      io.to(opponentSocketId).emit("new-move", switchPlayer);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
   socket.on("cancel-new-game", async (requestedId) => {
     try {
       let receiverSocket = await getSocketId(requestedId);
@@ -125,7 +179,6 @@ const game_socket_events = async (socket, io) => {
 
   socket.on("new-game-promited", async (opponentId) => {
     try {
-      let opponentSocket = await getSocketId(opponentId);
       let newGame = await createNewGame([
         socket.request.user._id.toString(),
         opponentId,

@@ -41,6 +41,7 @@ const updateGame = async (game) => {
             board: game.board,
             participants: game.participants,
             cubes: game.cubes,
+            lastMoves: game.lastMoves,
           },
         }
       );

@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 const { userSchema } = require("../../services/mongoDB/models/userSchema");
 const { saveNewUser } = require("../../services/mongoDB/Database/userDB");
 const User = mongoose.model("User", userSchema);
-const config = require("config");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

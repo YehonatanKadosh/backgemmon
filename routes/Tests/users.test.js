@@ -1,11 +1,11 @@
 const request = require("supertest");
 const { afterAll, afterEach, beforeAll } = require("@jest/globals");
 const app = require("../../app");
-const config = require("config");
+
 const mongoose = require("mongoose");
 const { userSchema } = require("../../services/mongoDB/models/userSchema");
 const User = mongoose.model("User", userSchema);
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

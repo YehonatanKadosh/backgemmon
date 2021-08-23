@@ -1,10 +1,10 @@
 const mongo = require("mongoose");
-const config = require("config");
+
 const { socketSchema } = require("./models/socketSchema");
 const Socket = mongo.model("Socket", socketSchema);
 
 mongo
-  .connect(config.get("MongoKEY"), {
+  .connect(process.env.MongoKEY, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

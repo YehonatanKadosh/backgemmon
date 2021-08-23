@@ -1,10 +1,10 @@
 const request = require("supertest");
 const { afterAll, afterEach, beforeAll } = require("@jest/globals");
 const app = require("../../app");
-const config = require("config");
+
 const mongoose = require("mongoose");
 const { createJsonWebToken } = require("../../services/JsonWebToken/JWT");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

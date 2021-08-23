@@ -1,5 +1,5 @@
+require("dotenv").config();
 const app = require("./app.js");
-
 const server = require("http").createServer(app);
 require("./services/socket.io/socketIo").Init(server);
 require("./services/mongoDB/mongoDB");

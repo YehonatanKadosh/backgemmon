@@ -1,8 +1,7 @@
-const config = require("config");
 const { afterAll, afterEach, beforeAll } = require("@jest/globals");
 const { userSchema } = require("../../models/userSchema");
 const mongoose = require("mongoose");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

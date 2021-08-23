@@ -6,7 +6,7 @@ const {
 const _ = require("lodash");
 const chat_socket_events = require("./chat_socket_handlers");
 const jwtAuth = require("socketio-jwt-auth");
-const config = require("config");
+
 const mongoose = require("mongoose");
 const { userSchema } = require("../mongoDB/models/userSchema");
 const game_socket_events = require("./game_socket_handlers");
@@ -24,7 +24,7 @@ const Init = (server) => {
   // authntication middleware
   io.use(
     jwtAuth.authenticate(
-      { secret: config.get("JSONWEBTOKENS") },
+      { secret: process.env.JSONWEBTOKENS },
       (user, done) => {
         User.find({ _id: user._id }, (err, user) => {
           if (err) {

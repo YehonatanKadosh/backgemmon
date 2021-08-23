@@ -1,9 +1,8 @@
-const config = require("config");
 const { afterAll, beforeAll } = require("@jest/globals");
 const mongoose = require("mongoose");
 const { gameSchema } = require("../../models/gameSchema");
 const { createNewGame } = require("../../../GameLogic/GameLogic");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

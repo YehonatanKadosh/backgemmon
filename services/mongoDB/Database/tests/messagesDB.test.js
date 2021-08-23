@@ -1,9 +1,8 @@
-const config = require("config");
 const { afterAll, beforeAll } = require("@jest/globals");
 const mongoose = require("mongoose");
 const { messageSchema } = require("../../models/messageSchema");
 const { newMessage, getMessages } = require("../messagesDB");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

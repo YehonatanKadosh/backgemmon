@@ -1,8 +1,8 @@
 const { removeSocket, newSocket, getSocketId } = require("../socketDB");
-const config = require("config");
+
 const { afterAll, beforeAll } = require("@jest/globals");
 const mongoose = require("mongoose");
-mongoose.connect(config.get("MOCKMongoKEY"), {
+mongoose.connect(process.env.MOCKMongoKEY, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

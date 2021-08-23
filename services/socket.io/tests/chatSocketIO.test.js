@@ -4,9 +4,9 @@ const { afterAll, beforeEach, afterEach, beforeAll } = require("@jest/globals");
 const { Init } = require("../socketIo");
 const { createJsonWebToken } = require("../../JsonWebToken/JWT");
 const { saveNewUser } = require("../../mongoDB/Database/userDB");
-const config = require("config");
+
 const mongoose = require("mongoose");
-// mongoose.connect(config.get("MOCKMongoKEY"), {
+// mongoose.connect(process.env.MOCKMongoKEY, {
 //   useNewUrlParser: true,
 // });
 const { userSchema } = require("../../mongoDB/models/userSchema");

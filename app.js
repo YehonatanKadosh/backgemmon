@@ -5,12 +5,15 @@ const socket = require("./routes/socketAPI");
 const conversation = require("./routes/conversationAPI");
 const notFound = require("./routes/404API");
 const logIn = require("./routes/logInAPI");
+const { userSchema } = require("./services/mongoDB/models/userSchema");
 const app = express();
 app.use(cors({ exposedHeaders: "x-access-token" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res, next) => {
-  res.send("server is up");
+  let mongo = require("mongoose");
+  let User = mongo.model("User", userSchema);
+  res.send(User.find({}));
 });
 app.use("/users", user);
 app.use("/conversations", conversation);

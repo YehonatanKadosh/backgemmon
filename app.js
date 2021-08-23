@@ -5,15 +5,15 @@ const socket = require("./routes/socketAPI");
 const conversation = require("./routes/conversationAPI");
 const notFound = require("./routes/404API");
 const logIn = require("./routes/logInAPI");
-const { userSchema } = require("./services/mongoDB/models/userSchema");
 const app = express();
 app.use(cors({ exposedHeaders: "x-access-token" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.get("/", (req, res, next) => {
+app.get("/", async (req, res, next) => {
   let mongo = require("mongoose");
+  const { userSchema } = require("./services/mongoDB/models/userSchema");
   let User = mongo.model("User", userSchema);
-  res.send(User.find({}));
+  res.json(await User.find({}));
 });
 app.use("/users", user);
 app.use("/conversations", conversation);

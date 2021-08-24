@@ -7,7 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import { createTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/core";
 import { brown } from "@material-ui/core/colors";
-
 const theme = createTheme({
   palette: {
     primary: brown,

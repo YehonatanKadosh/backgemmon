@@ -36,7 +36,7 @@ describe("GET /conversations", () => {
         .set("x-access-token", token);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body.messages).toBeDefined();
+      expect(response.bodys).toBeDefined();
       expect(response.headers["content-type"]).toEqual(
         expect.stringContaining("json")
       );

@@ -1,4 +1,5 @@
 {
-  "appService.defaultWebAppToDeploy": "/subscriptions/0a52038b-b180-4f9b-a57c-b7b5fcabe9a9/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/backgemmon-client",
-  "appService.deploySubpath": "."
+  "appService.deploySubpath": ".",
+  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"],
+  "appService.defaultWebAppToDeploy": "/subscriptions/b420cc15-8e1d-43b6-8706-e229092aa2e7/resourceGroups/backgemmon/providers/Microsoft.Web/sites/backgammon-client"
 }

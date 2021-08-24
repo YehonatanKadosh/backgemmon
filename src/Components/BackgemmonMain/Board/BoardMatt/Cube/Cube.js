@@ -14,7 +14,14 @@ const Cube = (props) => {
   );
 
   return (
-    <div className={props.class + " cube"}>
+    <div
+      className={
+        props.class +
+        " cube " +
+        (props.cube.playedOnce ? "cube-played-once " : "") +
+        (props.cube.playedTwice ? "cube-played-twice" : "")
+      }
+    >
       <div className="indicators-row" style={indicatorDivstyle}>
         {indicator}
         {props.cube.value > 1 ? indicator : ""}

@@ -70,7 +70,7 @@ export default class BackgemmonBoard extends React.Component {
     this.state.socket.on("user-disconnected", (removedSocketId) => {
       let sockets = this.state.sockets;
       let indexOfSocket = sockets.indexOf(
-        sockets.find((c) => c.id === removedSocketId)
+        sockets.find((s) => s.userId === removedSocketId)
       );
       sockets.splice(indexOfSocket, 1);
       this.setState({ sockets });
@@ -79,8 +79,13 @@ export default class BackgemmonBoard extends React.Component {
 
     this.state.socket.on("new-game-started", (opponents) => {
       let sockets = this.state.sockets;
-      opponents.forEach((userId) => {
-        sockets.find((s) => s.userId === userId).onGame = true;
+      opponents.forEach((opponent) => {
+        let opponentSocket;
+        opponentSocket = sockets.find(
+          (socket) => socket.userId === opponent.userId
+        );
+
+        if (opponentSocket) opponentSocket.onGame = true;
       });
       this.setState({ sockets });
     });
@@ -91,9 +96,9 @@ export default class BackgemmonBoard extends React.Component {
       opponents.forEach((opponent) => {
         let opponentSocket;
         opponentSocket = sockets.find(
-          (socket) =>
-            socket.userId === (opponent.userId ? opponent.userId : opponent._id)
+          (socket) => socket.userId === opponent.userId
         );
+
         if (opponentSocket) opponentSocket.onGame = false;
       });
 

@@ -36,3 +36,56 @@
   text-align: center;
   color: white !important;
 }
+
+.step-back-btn {
+  position: absolute !important;
+  left: 0;
+  height: 7%;
+}
+.roll-btn,
+.end-btn {
+  position: absolute !important;
+  top: 46.5%;
+  height: 7%;
+}
+
+.roll-btn {
+  left: 45%;
+  width: 10%;
+}
+
+.end-btn {
+  left: 40%;
+  width: 20%;
+}
+
+.finishing-progress {
+  position: absolute !important;
+  height: 4% !important;
+  width: 26%;
+  background-color: transparent !important;
+}
+
+.finishing-player-progress {
+  left: 37%;
+  bottom: 21%;
+  transform: rotate(270deg);
+}
+
+.finishing-opponent-progress {
+  left: 37.2%;
+  top: 21%;
+  transform: rotate(90deg);
+}
+
+.black-progress {
+  div {
+    background-color: black !important;
+  }
+}
+
+.white-progress {
+  div {
+    background-color: white !important;
+  }
+}

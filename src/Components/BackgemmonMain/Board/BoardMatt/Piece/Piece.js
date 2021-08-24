@@ -1,6 +1,7 @@
 import { AlbumTwoTone } from "@material-ui/icons";
 import { useCallback, useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import EventEmitter from "reactjs-eventemitter";
 import "./Piece.scss";
 const Piece = (props) => {
   const getWidth = useCallback(() => {
@@ -26,7 +27,7 @@ const Piece = (props) => {
       isDragDisabled={
         props.player?.isBlack !== props.piece.isBlack ||
         !props.player?.myTurn ||
-        (props.jailPopulated === true && props.columId !== 0)
+        (props.player.jailPopulated && props.columId !== 0)
       }
     >
       {(provided) => (
@@ -34,13 +35,25 @@ const Piece = (props) => {
           {...provided.dragHandleProps}
           {...provided.draggableProps}
           ref={provided.innerRef}
+          onClick={() => {
+            if (
+              !(
+                props.player?.isBlack !== props.piece.isBlack ||
+                !props.player?.myTurn ||
+                (props.player.jailPopulated && props.columId !== 0)
+              )
+            )
+              EventEmitter.dispatch("piece-clicked", props.columId);
+          }}
         >
           <AlbumTwoTone
             style={{
               fontSize: width * 0.07,
             }}
             className={
-              (props.piece.isBlack ? "black" : "white") + " game-piece"
+              (props.piece.isBlack ? "black" : "white") +
+              " game-piece " +
+              (props.columId === 0 ? "jail-pieces" : "")
             }
           />
         </span>

@@ -44,7 +44,7 @@ const Column = (props) => {
 
   return (
     <Droppable
-      isDropDisabled={props.allPiecesAtHome}
+      isDropDisabled={props.player.allPiecesAtHome}
       droppableId={`${props.id}`}
       type="Piece"
     >
@@ -62,10 +62,8 @@ const Column = (props) => {
               : "")
           }
         >
-          {props.class === "bottom" && <div className="flex-grow-1"></div>}
           {pieces.map((piece) => (
             <Piece
-              jailPopulated={props.jailPopulated}
               myTurn={props.player?.myTurn}
               columId={props.id}
               key={piece.key}

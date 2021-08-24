@@ -34,3 +34,11 @@
   height: 100%;
   overflow: hidden;
 }
+
+.cube-played-once {
+  background-color: darkgray;
+}
+
+.cube-played-twice {
+  background-color: gray !important;
+}

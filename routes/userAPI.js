@@ -25,7 +25,7 @@ router.post("/add", async (req, res) => {
         .send(_.pick(user, ["_id", "name", "game"]));
     }
   } catch (err) {
-    res.status(400).send(err.details?.message || err);
+    res.status(400).send(err);
   }
 });
 

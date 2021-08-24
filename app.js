@@ -6,6 +6,7 @@ const conversation = require("./routes/conversationAPI");
 const notFound = require("./routes/404API");
 const logIn = require("./routes/logInAPI");
 const app = express();
+
 app.use(cors({ exposedHeaders: "x-access-token" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

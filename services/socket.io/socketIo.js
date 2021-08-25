@@ -6,7 +6,7 @@ const {
 const _ = require("lodash");
 const chat_socket_events = require("./chat_socket_handlers");
 const jwtAuth = require("socketio-jwt-auth");
-
+const config = require("config");
 const mongoose = require("mongoose");
 const { userSchema } = require("../mongoDB/models/userSchema");
 const game_socket_events = require("./game_socket_handlers");

@@ -16,9 +16,8 @@ const Piece = (props) => {
 
   const [width, setWidth] = useState(getWidth());
   useEffect(() => {
-    window.addEventListener("resize", () => 
-      setWidth(getWidth())
-  , [getWidth]);
+    window.addEventListener("resize", () => setWidth(getWidth()));
+  }, [getWidth]);
 
   return (
     <Draggable

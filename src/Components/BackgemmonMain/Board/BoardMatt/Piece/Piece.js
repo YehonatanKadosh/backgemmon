@@ -6,18 +6,24 @@ import "./Piece.scss";
 const Piece = (props) => {
   const getWidth = useCallback(() => {
     return props.chatVisable
-      ? 0.75 * window.innerWidth > 646
-        ? 646
+      ? 0.75 * window.innerWidth > 411
+        ? 411
         : 0.75 * window.innerWidth
-      : window.innerWidth > 646
-      ? 646
+      : window.innerWidth > 411
+      ? 411
       : window.innerWidth;
   }, [props.chatVisable]);
+  const getHeight = useCallback(() => {
+    return window.innerHeight > 344 ? 344 : window.innerHeight;
+  }, []);
 
   const [width, setWidth] = useState(getWidth());
-
+  const [height, setHeight] = useState(getHeight());
   useEffect(() => {
-    window.addEventListener("resize", () => setWidth(getWidth()));
+    window.addEventListener("resize", () => {
+      setWidth(getWidth());
+      setHeight(getHeight());
+    });
   }, [getWidth]);
 
   return (
@@ -35,6 +41,8 @@ const Piece = (props) => {
           {...provided.dragHandleProps}
           {...provided.draggableProps}
           ref={provided.innerRef}
+          className="d-flex"
+          style={{ height: width * 0.065 }}
           onClick={() => {
             if (
               !(

@@ -55,8 +55,8 @@ export default function SignIn(props) {
           label="Email Address"
           name="email"
           autoComplete="email"
-          error={error.toLowerCase().includes("email")}
-          helperText={error.toLowerCase().includes("email") ? error : ""}
+          error={error?.toLowerCase().includes("email")}
+          helperText={error?.toLowerCase().includes("email") ? error : ""}
           onChange={(e) => setEmail(e.target.value)}
           autoFocus
         />
@@ -71,8 +71,8 @@ export default function SignIn(props) {
           type="password"
           id="password"
           onChange={(e) => setPassword(e.target.value)}
-          error={error.toLowerCase().includes("password")}
-          helperText={error.toLowerCase().includes("password") ? error : ""}
+          error={error?.toLowerCase().includes("password")}
+          helperText={error?.toLowerCase().includes("password") ? error : ""}
           autoComplete="current-password"
         />
         <Button

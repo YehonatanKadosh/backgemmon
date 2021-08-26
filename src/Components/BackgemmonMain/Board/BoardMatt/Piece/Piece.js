@@ -13,18 +13,12 @@ const Piece = (props) => {
       ? 411
       : window.innerWidth;
   }, [props.chatVisable]);
-  const getHeight = useCallback(() => {
-    return window.innerHeight > 344 ? 344 : window.innerHeight;
-  }, []);
 
   const [width, setWidth] = useState(getWidth());
-  const [height, setHeight] = useState(getHeight());
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setWidth(getWidth());
-      setHeight(getHeight());
-    });
-  }, [getWidth]);
+    window.addEventListener("resize", () => 
+      setWidth(getWidth())
+  , [getWidth]);
 
   return (
     <Draggable

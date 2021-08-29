@@ -140,7 +140,7 @@ export default class BackgemmonBoard extends React.Component {
 
   loadSockets = async () => {
     let responseData = (
-      await axios.get(process.env.REACT_APP_SERVER_Sockets, {
+      await axios.get(process.env.REACT_APP_SERVER_URL + "/sockets", {
         headers: { "x-access-token": sessionStorage.getItem("token") },
       })
     ).data;

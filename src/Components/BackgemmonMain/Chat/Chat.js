@@ -17,7 +17,7 @@ export class ChatComponent extends React.Component {
   setSocketConversationId = async (socket) => {
     this.setState({ loading: true });
     let conversation = (
-      await axios.get(process.env.REACT_APP_SERVER_Conversations, {
+      await axios.get(process.env.REACT_APP_SERVER_URL + "/conversations", {
         headers: { "x-access-token": sessionStorage.getItem("token") },
         params: { participants: [this.props.user._id, socket.userId] },
       })

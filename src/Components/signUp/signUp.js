@@ -22,7 +22,7 @@ export default function SignUp(props) {
 
   const submit = () => {
     axios
-      .post(process.env.REACT_APP_SERVER_Users + "/add", {
+      .post(process.env.REACT_APP_SERVER_URL + "/users/add", {
         email,
         password,
         name: firstName + lastName ? ` ${lastName}` : "",

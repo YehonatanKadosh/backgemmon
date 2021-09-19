@@ -23,6 +23,7 @@ jobs:
           node-version: "12.x"
 
       - name: npm install, build, and test
+        #working-directory: ./server
         run: |
           npm install
           npm run build --if-present
@@ -34,3 +35,4 @@ jobs:
           slot-name: Production
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_541787993A9A46C699829E593BCB490D }}
           package: .
+          #package: ./server

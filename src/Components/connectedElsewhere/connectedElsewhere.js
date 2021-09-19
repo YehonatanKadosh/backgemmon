@@ -1,7 +1,7 @@
 import { Button } from "@material-ui/core";
 import React from "react";
 
-const ConnectedElseware = (props) => {
+const ConnectedElsewhere = (props) => {
   return (
     <div className="d-flex flex-column">
       <b>looks like youre already connected on another device</b>
@@ -18,4 +18,4 @@ const ConnectedElseware = (props) => {
   );
 };
 
-export default ConnectedElseware;
+export default ConnectedElsewhere;

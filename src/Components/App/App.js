@@ -4,7 +4,7 @@ import SignIn from "../signIn/signIn";
 import { Redirect, Route, Switch } from "react-router";
 import SignUp from "../signUp/signUp";
 import BackgemmonBoard from "../BackgemmonMain/backgemmonBoard";
-import ConnectedElseware from "../connectedElseware/connectedElseware";
+import ConnectedElsewhere from "../connectedElsewhere/connectedElsewhere";
 
 const App = () => {
   const [isAuthenticated, userHasAuthenticated] = useState(false);
@@ -40,8 +40,8 @@ const App = () => {
         )}
       />
       <Route
-        path="/ConnectedElseware"
-        render={(props) => <ConnectedElseware {...props} />}
+        path="/connectedElsewhere"
+        render={(props) => <ConnectedElsewhere {...props} />}
       />
       <Redirect to="/" />
     </Switch>

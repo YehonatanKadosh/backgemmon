@@ -53,7 +53,7 @@ export default class BackgemmonBoard extends React.Component {
 
   subscribeToSocketEvents = () => {
     this.state.socket.on("connected-on-another-device", () => {
-      this.props.history.push("/ConnectedElseware");
+      this.props.history.push("/connectedElsewhere");
       if (this.state.socket.connected) this.state.socket.disconnect();
       sessionStorage.removeItem("token");
       this.props.userHasAuthenticated(false);

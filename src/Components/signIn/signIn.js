@@ -20,7 +20,7 @@ export default function SignIn(props) {
 
   const submit = () => {
     axios
-      .post(process.env.REACT_APP_SERVER_URL + "logIn", {
+      .post(process.env.REACT_APP_SERVER_URL + "/logIn", {
         email,
         password,
       })
